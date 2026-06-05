@@ -9,10 +9,13 @@ safetensors
 tensorboard
 vocos
 pydub
+gradio
+soundfile
 
 # Normalization
 cn2an
 inflect
+soe-vinorm>=0.3.2
 
 # Tokenization
 jieba

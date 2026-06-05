@@ -11,13 +11,25 @@ ViZipVoice là bản fine-tune tiếng Việt của [ZipVoice](https://github.co
 
 Model đã được upload tại [dolly-vn/ViZipvoice](https://huggingface.co/dolly-vn/ViZipvoice). Repo Hugging Face chứa:
 
-- `model.pt`: checkpoint mới nhất `checkpoint-680000.pt`, đã tách phần inference và lưu FP16.
+- `checkpoint-700000.pt`: checkpoint mới nhất theo training step, đã tách phần inference và lưu FP16.
+- `config.json`: cấu hình model kiêm query file để Hugging Face track download stats.
 - `model.json`: cấu hình ZipVoice dùng để dựng model.
 - `tokens.txt`: tokenizer ký tự tiếng Việt, `244` token.
+- `audio/`: `30` ref audio mẫu, mỗi file audio có một file `.txt` cùng basename chứa transcript.
+- `demo/`: một vài output demo được sinh bằng checkpoint mới nhất và ref audio trong `audio/`.
 - `README.md`: model card, trỏ ngược về repo GitHub này.
 - `vizipvoice.py`: wrapper mẫu cho người muốn tải file từ Hugging Face.
 
 Model sử dụng sample rate `24 kHz` và vocoder mặc định `charactr/vocos-mel-24khz`.
+Wrapper mặc định sẽ tự tìm các file `checkpoint-<step>.pt` và load checkpoint có step lớn nhất. Hiện tại checkpoint mới nhất là `checkpoint-700000.pt`.
+
+## Training data & tokenizer
+
+- Dataset training: khoảng `7000` giờ dữ liệu tiếng Việt.
+- Tokenizer: `SimpleTokenizer` dạng character-level, tức là tách từng ký tự Unicode trong text thành token.
+- Vocab: `tokens.txt` có `244` token, bao gồm ký tự tiếng Việt có dấu, chữ cái, số, dấu câu và token padding `_`.
+- Text normalization: không dùng phoneme/G2P cho bản Việt này; transcript prompt và text đầu vào được map theo ký tự. Ký tự ngoài vocab sẽ bị tokenizer bỏ qua.
+- Vietnamese normalization: wrapper mặc định dùng `soe-vinorm` để chuẩn hóa số, ngày tháng, đơn vị và viết tắt sang dạng đọc cho TTS. Sau khi normalize, wrapper dọn lại khoảng trắng quanh dấu câu, ví dụ `xin chào , bạn ?` thành `xin chào, bạn?`.
 
 ## Cài đặt
 
@@ -55,6 +67,58 @@ python3 -m zipvoice.bin.infer_vizipvoice \
 ```
 
 Mặc định lệnh trên sẽ tải model từ [dolly-vn/ViZipvoice](https://huggingface.co/dolly-vn/ViZipvoice) và cache bằng `huggingface_hub`.
+Nếu trên Hugging Face có nhiều file `checkpoint-<step>.pt`, CLI sẽ tự load file có step lớn nhất.
+
+## Ref audio trên Hugging Face
+
+Repo Hugging Face có thư mục `audio/` gồm `30` ref audio. Mỗi audio đi kèm transcript cùng tên:
+
+```text
+audio/Đinh-Quyết.mp3
+audio/Đinh-Quyết.txt
+```
+
+Tên file đã được làm sạch, chỉ giữ tên audio/người nói và không giữ prefix `lar_*` hoặc hậu tố `Pro`. Gradio sẽ ưu tiên đọc format sidecar này: audio file và `.txt` cùng basename.
+
+## Audio demo
+
+Các file demo được sinh bằng `checkpoint-700000.pt` với text dài trong thư mục `demo/` trên Hugging Face. Nếu trình Markdown không render audio player, bấm link nghe trực tiếp bên dưới.
+
+**Đinh-Quyết**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
+
+[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
+
+**Nhã-Uyên**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
+
+[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
+
+**MC**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
+
+[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
+
+## Chạy Gradio với ref audio trên Hugging Face
+
+Tải model kèm checkpoint, config, tokenizer, `audio/` và `demo/` về local:
+
+```bash
+huggingface-cli download dolly-vn/ViZipvoice \
+  --local-dir models/ViZipvoice \
+  --local-dir-use-symlinks False
+```
+
+Chạy giao diện Gradio:
+
+```bash
+python3 egs/zipvoice/gradio_app.py --exp-dir models/ViZipvoice
+```
+
+Nếu không truyền `--ref-audio-dir`, Gradio sẽ tự tìm `models/ViZipvoice/audio/` trước. Mỗi preset hiển thị đúng basename audio và transcript được đọc từ file `.txt` cùng tên.
 
 Một số tham số hay dùng:
 
@@ -68,6 +132,39 @@ python3 -m zipvoice.bin.infer_vizipvoice \
   --guidance-scale 1.0 \
   --speed 1.0 \
   --seed 666
+```
+
+CLI mặc định chạy cùng flow với Gradio:
+
+- normalize tiếng Việt bằng `soe-vinorm`;
+- tách text dài thành từng câu;
+- với câu `1` chữ: dùng tối thiểu `24` step và `speed=0.6`;
+- với câu `2-4` chữ: dùng `speed=0.8`;
+- sinh từng segment rồi ghép lại bằng silence, crossfade và fade in/out.
+
+Có thể chỉnh postprocessing:
+
+```bash
+python3 -m zipvoice.bin.infer_vizipvoice \
+  --prompt-wav prompt.wav \
+  --prompt-text "Transcript của prompt." \
+  --text "Nội dung cần đọc." \
+  --res-wav-path output.wav \
+  --crossfade-ms 80 \
+  --silence-ms 180 \
+  --fade-in-ms 20 \
+  --fade-out-ms 80
+```
+
+Tắt Vietnamese text normalization nếu muốn dùng raw text:
+
+```bash
+python3 -m zipvoice.bin.infer_vizipvoice \
+  --prompt-wav prompt.wav \
+  --prompt-text "Transcript của prompt." \
+  --text "Nội dung cần đọc." \
+  --res-wav-path output.wav \
+  --no-vietnamese-normalize
 ```
 
 ## Dùng bằng Python wrapper
@@ -90,7 +187,11 @@ print(metrics)
 Wrapper mặc định:
 
 - tải model từ `dolly-vn/ViZipvoice`;
+- chọn checkpoint `checkpoint-<step>.pt` mới nhất theo step;
 - dùng `SimpleTokenizer` đúng với `tokens.txt` tiếng Việt;
+- normalize `prompt_text` và `text` bằng `soe-vinorm`, rồi sửa khoảng trắng quanh dấu câu;
+- tách câu và áp rule text ngắn giống Gradio: `1` chữ dùng `step>=24/speed=0.6`, `2-4` chữ dùng `speed=0.8`;
+- postprocess nhiều segment bằng silence, crossfade và fade in/out;
 - tự chọn `cuda`, `mps` hoặc `cpu`;
 - bật autocast FP16 khi chạy trên CUDA.
 

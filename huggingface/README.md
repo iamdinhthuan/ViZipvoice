@@ -24,12 +24,24 @@ ViZipVoice is a Vietnamese fine-tuned ZipVoice model for zero-shot text-to-speec
 
 ## Files
 
-- `model.pt`: latest `checkpoint-680000.pt`, inference-only state dict saved in FP16.
+- `checkpoint-700000.pt`: latest checkpoint by training step, inference-only state dict saved in FP16.
+- `config.json`: model config and Hugging Face download-stats query file.
 - `model.json`: ZipVoice model config.
 - `tokens.txt`: Vietnamese character tokenizer with 244 tokens.
+- `audio/`: 30 reference audio files. Each audio file has a sidecar `.txt` transcript with the same basename.
+- `demo/`: generated demo outputs using the latest checkpoint and selected reference audio files.
 - `vizipvoice.py`: convenience wrapper example mirrored from the GitHub repo.
 
 The model runs at `24 kHz` and uses `charactr/vocos-mel-24khz` as the default vocoder.
+The wrapper automatically selects the largest `checkpoint-<step>.pt` file. The current latest checkpoint is `checkpoint-700000.pt`.
+
+## Training Data & Tokenizer
+
+- Training dataset: approximately `7000` hours of Vietnamese speech.
+- Tokenizer: `SimpleTokenizer`, character-level Unicode tokenization.
+- Vocabulary: `tokens.txt` contains `244` tokens, including Vietnamese diacritics, letters, digits, punctuation, and `_` padding.
+- Text handling: this Vietnamese model does not use phoneme/G2P tokenization; prompt transcript and synthesis text are mapped by character. Out-of-vocabulary characters may be skipped.
+- Vietnamese normalization: the wrapper uses `soe-vinorm` by default to expand numbers, dates, units, and abbreviations into TTS-friendly Vietnamese text. It then removes extra spaces around punctuation, e.g. `xin chào , bạn ?` becomes `xin chào, bạn?`.
 
 ## Install
 
@@ -54,6 +66,87 @@ python3 -m zipvoice.bin.infer_vizipvoice \
 ```
 
 The command downloads model files from this Hugging Face repo by default.
+Pass `--no-vietnamese-normalize` to disable `soe-vinorm` and use raw text.
+The CLI and Python wrapper use the same inference flow as the Gradio app by default:
+
+- normalize Vietnamese text with `soe-vinorm`;
+- split long text into sentences;
+- for a `1`-word sentence, use at least `24` steps and `speed=0.6`;
+- for a `2-4` word sentence, use `speed=0.8`;
+- generate each segment separately, then merge with silence, crossfade, fade in, and fade out.
+
+Postprocessing can be adjusted from the CLI:
+
+```bash
+python3 -m zipvoice.bin.infer_vizipvoice \
+  --prompt-wav prompt.wav \
+  --prompt-text "Transcript của prompt." \
+  --text "Nội dung cần đọc." \
+  --res-wav-path output.wav \
+  --crossfade-ms 80 \
+  --silence-ms 180 \
+  --fade-in-ms 20 \
+  --fade-out-ms 80
+```
+
+## Reference Audio
+
+The `audio/` folder contains 30 reference prompts. File names are cleaned from the original source names and do not keep the `Pro` suffix. The prompt transcript is stored next to each audio file:
+
+```text
+audio/Đinh-Quyết.mp3
+audio/Đinh-Quyết.txt
+```
+
+File names only keep the audio/person name and do not keep the original `lar_*` prefix or `Pro` suffix. The Gradio app loads this sidecar format by default when the ref audio directory contains matching `.txt` files.
+
+To run the GitHub Gradio app with this model repo downloaded locally:
+
+```bash
+huggingface-cli download dolly-vn/ViZipvoice \
+  --local-dir models/ViZipvoice \
+  --local-dir-use-symlinks False
+
+python3 egs/zipvoice/gradio_app.py --exp-dir models/ViZipvoice
+```
+
+When `--ref-audio-dir` is not provided, the app first looks for `audio/` inside `--exp-dir`.
+
+## Demo Outputs
+
+The `demo/` folder contains generated samples for this text:
+
+```text
+Chiến tranh luôn là một chủ đề nặng nề, nhưng cũng rất cần được nhắc đến để con người hiểu rõ hơn giá trị của hòa bình. Khi một cuộc chiến xảy ra, những gì bị phá hủy không chỉ là nhà cửa, đường sá, trường học hay bệnh viện. Điều đau lòng nhất chính là sinh mạng con người, là những gia đình bị chia cắt, là những đứa trẻ phải lớn lên trong sợ hãi, và là những vùng đất từng yên bình bỗng trở nên hoang tàn.
+```
+
+Demo files:
+
+- `demo/demo_01_Đinh-Quyết.wav`
+- `demo/demo_02_Nhã-Uyên.wav`
+- `demo/demo_03_MC.wav`
+
+### Audio Demo
+
+If the embedded player does not render in your browser, use the direct links below each player.
+
+**Đinh-Quyết**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
+
+[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
+
+**Nhã-Uyên**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
+
+[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
+
+**MC**
+
+<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
+
+[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
 
 ## Python Wrapper
 
@@ -69,6 +162,8 @@ metrics = tts.synthesize(
 )
 print(metrics)
 ```
+
+By default, `synthesize()` splits text into sentences, applies the short-text speed/step rules from the Gradio app, and postprocesses generated segments with silence, crossfade, fade in, and fade out.
 
 ## Local Model Usage
 

@@ -3,7 +3,7 @@ import argparse
 import logging
 from pathlib import Path
 
-from zipvoice.vizipvoice import DEFAULT_REPO_ID, ViZipVoiceTTS
+from zipvoice.vizipvoice import DEFAULT_CHECKPOINT_NAME, DEFAULT_REPO_ID, ViZipVoiceTTS
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -14,7 +14,7 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument("--repo-id", default=DEFAULT_REPO_ID)
     parser.add_argument("--revision", default=None)
     parser.add_argument("--model-dir", default=None)
-    parser.add_argument("--checkpoint-name", default="model.pt")
+    parser.add_argument("--checkpoint-name", default=DEFAULT_CHECKPOINT_NAME)
     parser.add_argument("--vocoder-path", default=None)
     parser.add_argument("--device", default=None)
     parser.add_argument("--fp16", type=int, default=1)
@@ -34,6 +34,20 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-duration", type=float, default=100)
     parser.add_argument("--remove-long-sil", action="store_true")
     parser.add_argument("--seed", type=int, default=666)
+    parser.add_argument(
+        "--no-split-sentences",
+        action="store_true",
+        help="Disable Gradio-style sentence splitting before inference.",
+    )
+    parser.add_argument("--crossfade-ms", type=int, default=80)
+    parser.add_argument("--silence-ms", type=int, default=180)
+    parser.add_argument("--fade-in-ms", type=int, default=20)
+    parser.add_argument("--fade-out-ms", type=int, default=80)
+    parser.add_argument(
+        "--no-vietnamese-normalize",
+        action="store_true",
+        help="Disable soe-vinorm normalization before inference.",
+    )
     return parser
 
 
@@ -64,13 +78,20 @@ def main() -> None:
         max_duration=args.max_duration,
         remove_long_sil=args.remove_long_sil,
         seed=args.seed,
+        normalize_vietnamese=not args.no_vietnamese_normalize,
+        split_sentences=not args.no_split_sentences,
+        crossfade_ms=args.crossfade_ms,
+        silence_ms=args.silence_ms,
+        fade_in_ms=args.fade_in_ms,
+        fade_out_ms=args.fade_out_ms,
     )
 
     logging.info("Saved to: %s", Path(args.res_wav_path))
     logging.info(
-        "RTF: %.4f | wav seconds: %.2f",
+        "RTF: %.4f | wav seconds: %.2f | segments: %d",
         metrics["rtf"],
         metrics["wav_seconds"],
+        metrics["segments"],
     )
 
 
