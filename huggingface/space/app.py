@@ -80,7 +80,7 @@ def ensure_code_repo() -> None:
 ensure_code_repo()
 sys.path.insert(0, str(CODE_DIR))
 
-from zipvoice.vizipvoice import ViZipVoiceTTS, normalize_vietnamese_text  # noqa: E402
+from zipvoice.vizipvoice import ViZipVoiceTTS  # noqa: E402
 
 
 def sorted_ref_audio_files() -> list[str]:
@@ -159,23 +159,6 @@ def default_ref() -> RefPrompt:
 def select_ref(label: str) -> tuple[str, str]:
     item = refs_by_label()[label]
     return item.audio_path, item.text
-
-
-def preview_normalized_text(prompt_text: str, target_text: str) -> str:
-    try:
-        normalized_prompt = normalize_vietnamese_text(prompt_text)
-        normalized_target = normalize_vietnamese_text(target_text)
-    except Exception as exc:
-        raise gr.Error(str(exc)) from exc
-
-    return json.dumps(
-        {
-            "prompt_text": normalized_prompt,
-            "text": normalized_target,
-        },
-        ensure_ascii=False,
-        indent=2,
-    )
 
 
 @spaces.GPU(duration=60)
@@ -281,9 +264,7 @@ def build_app() -> gr.Blocks:
                     lines=8,
                     label="Text",
                 )
-                with gr.Row():
-                    generate_btn = gr.Button("Generate", variant="primary")
-                    normalize_btn = gr.Button("Preview normalized text")
+                generate_btn = gr.Button("Generate", variant="primary")
 
                 with gr.Accordion("Advanced", open=False):
                     with gr.Row():
@@ -348,21 +329,10 @@ def build_app() -> gr.Blocks:
             output_audio = gr.Audio(type="filepath", label="Output")
             status = gr.Textbox(lines=12, label="Status")
 
-        normalized_preview = gr.Code(
-            label="Normalized text",
-            language="json",
-            visible=True,
-        )
-
         ref_label.change(
             fn=select_ref,
             inputs=[ref_label],
             outputs=[prompt_audio, prompt_text],
-        )
-        normalize_btn.click(
-            fn=preview_normalized_text,
-            inputs=[prompt_text, text],
-            outputs=[normalized_preview],
         )
         generate_btn.click(
             fn=generate,
