@@ -4,6 +4,7 @@ ViZipVoice là bản fine-tune tiếng Việt của [ZipVoice](https://github.co
 
 - GitHub: https://github.com/iamdinhthuan/ViZipvoice
 - Hugging Face model: https://huggingface.co/dolly-vn/ViZipvoice
+- Hugging Face Space: https://huggingface.co/spaces/dolly-vn/ViZipvoice
 - Base project: https://github.com/k2-fsa/ZipVoice
 - Base paper: https://arxiv.org/abs/2506.13053
 

@@ -18,6 +18,7 @@ base_model: k2-fsa/ZipVoice
 Vietnamese zero-shot TTS / voice cloning fine-tuned from [ZipVoice](https://github.com/k2-fsa/ZipVoice).
 
 - GitHub: https://github.com/iamdinhthuan/ViZipvoice
+- Space: https://huggingface.co/spaces/dolly-vn/ViZipvoice
 - Latest checkpoint: `checkpoint-700000.pt`, FP16 inference state dict
 - Training data: about `7000` hours of Vietnamese speech
 - Tokenizer: `SimpleTokenizer`, character-level, `244` tokens

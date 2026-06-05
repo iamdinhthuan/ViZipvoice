@@ -1,0 +1,19 @@
+--find-links https://k2-fsa.github.io/icefall/piper_phonemize.html
+
+gradio
+torch
+torchaudio
+numpy
+lhotse
+huggingface_hub
+safetensors
+vocos
+pydub
+soundfile
+cn2an
+inflect
+soe-vinorm>=0.3.2
+jieba
+piper_phonemize
+pypinyin
+setuptools<81
