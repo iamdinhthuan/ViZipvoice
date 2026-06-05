@@ -18,9 +18,10 @@ base_model: k2-fsa/ZipVoice
 Vietnamese zero-shot TTS / voice cloning fine-tuned from [ZipVoice](https://github.com/k2-fsa/ZipVoice).
 
 - GitHub: https://github.com/iamdinhthuan/ViZipvoice
+- Model repo: https://huggingface.co/contextboxai/ViZipvoice
 - Space: https://huggingface.co/spaces/dinhthuan/ViZipvoice
 - Latest checkpoint: `checkpoint-700000.pt`, FP16 inference state dict
-- Training data: about `7000` hours of Vietnamese speech
+- Training data: about `7000` total hours, including roughly `6500` hours of Vietnamese and `500` hours of English
 - Tokenizer: `SimpleTokenizer`, character-level, `244` tokens
 - Sample rate: `24 kHz`
 - Default vocoder: `charactr/vocos-mel-24khz`
@@ -33,21 +34,21 @@ Generated with `checkpoint-700000.pt`, the current wrapper flow, and the demo te
 
 **Đinh-Quyết**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
 
-[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
+[Open audio](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
 
 **Nhã-Uyên**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
 
-[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
+[Open audio](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
 
 **MC**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
 
-[Open audio](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
+[Open audio](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
 
 ## Install
 
@@ -97,7 +98,7 @@ audio/Đinh-Quyết.txt
 Names only keep the audio/person name; the original `lar_*` prefix and `Pro` suffix are removed. The Gradio app reads this sidecar format automatically.
 
 ```bash
-huggingface-cli download dolly-vn/ViZipvoice \
+huggingface-cli download contextboxai/ViZipvoice \
   --local-dir models/ViZipvoice \
   --local-dir-use-symlinks False
 

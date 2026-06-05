@@ -18,7 +18,7 @@ from zipvoice.tokenizer.tokenizer import SimpleTokenizer
 from zipvoice.utils.checkpoint import load_checkpoint
 from zipvoice.utils.feature import VocosFbank
 
-DEFAULT_REPO_ID = "dolly-vn/ViZipvoice"
+DEFAULT_REPO_ID = "contextboxai/ViZipvoice"
 DEFAULT_CHECKPOINT_NAME = "latest"
 CHECKPOINT_RE = re.compile(r"^checkpoint-(\d+)\.pt$")
 SENTENCE_SPLIT_PATTERN = re.compile(r"[^.?？。]+(?:[.?？。]+|$)", re.S)

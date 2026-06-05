@@ -32,7 +32,7 @@ except ImportError:
     spaces = _SpacesFallback()
 
 
-MODEL_REPO_ID = os.getenv("VIZIPVOICE_MODEL_REPO", "dolly-vn/ViZipvoice")
+MODEL_REPO_ID = os.getenv("VIZIPVOICE_MODEL_REPO", "contextboxai/ViZipvoice")
 GITHUB_REPO_URL = os.getenv(
     "VIZIPVOICE_GITHUB_REPO",
     "https://github.com/iamdinhthuan/ViZipvoice.git",
@@ -236,7 +236,7 @@ def build_app() -> gr.Blocks:
     with gr.Blocks(title="ViZipVoice") as demo:
         gr.Markdown(
             "# ViZipVoice\n"
-            "[Model](https://huggingface.co/dolly-vn/ViZipvoice) · "
+            "[Model](https://huggingface.co/contextboxai/ViZipvoice) · "
             "[GitHub](https://github.com/iamdinhthuan/ViZipvoice)"
         )
 

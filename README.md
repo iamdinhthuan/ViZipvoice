@@ -3,14 +3,14 @@
 ViZipVoice là bản fine-tune tiếng Việt của [ZipVoice](https://github.com/k2-fsa/ZipVoice), hướng tới zero-shot text-to-speech và voice cloning tiếng Việt. Người dùng chỉ cần một đoạn prompt audio ngắn kèm transcript của prompt, sau đó nhập nội dung tiếng Việt cần đọc.
 
 - GitHub: https://github.com/iamdinhthuan/ViZipvoice
-- Hugging Face model: https://huggingface.co/dolly-vn/ViZipvoice
+- Hugging Face model: https://huggingface.co/contextboxai/ViZipvoice
 - Hugging Face Space: https://huggingface.co/spaces/dinhthuan/ViZipvoice
 - Base project: https://github.com/k2-fsa/ZipVoice
 - Base paper: https://arxiv.org/abs/2506.13053
 
 ## Model
 
-Model đã được upload tại [dolly-vn/ViZipvoice](https://huggingface.co/dolly-vn/ViZipvoice). Repo Hugging Face chứa:
+Model đã được upload tại [contextboxai/ViZipvoice](https://huggingface.co/contextboxai/ViZipvoice). Repo Hugging Face chứa:
 
 - `checkpoint-700000.pt`: checkpoint mới nhất theo training step, đã tách phần inference và lưu FP16.
 - `config.json`: cấu hình model kiêm query file để Hugging Face track download stats.
@@ -26,7 +26,7 @@ Wrapper mặc định sẽ tự tìm các file `checkpoint-<step>.pt` và load c
 
 ## Training data & tokenizer
 
-- Dataset training: khoảng `7000` giờ dữ liệu tiếng Việt.
+- Dataset training: khoảng `7000` giờ dữ liệu, gồm khoảng `6500` giờ tiếng Việt và `500` giờ tiếng Anh.
 - Tokenizer: `SimpleTokenizer` dạng character-level, tức là tách từng ký tự Unicode trong text thành token.
 - Vocab: `tokens.txt` có `244` token, bao gồm ký tự tiếng Việt có dấu, chữ cái, số, dấu câu và token padding `_`.
 - Text normalization: không dùng phoneme/G2P cho bản Việt này; transcript prompt và text đầu vào được map theo ký tự. Ký tự ngoài vocab sẽ bị tokenizer bỏ qua.
@@ -67,7 +67,7 @@ python3 -m zipvoice.bin.infer_vizipvoice \
   --res-wav-path output.wav
 ```
 
-Mặc định lệnh trên sẽ tải model từ [dolly-vn/ViZipvoice](https://huggingface.co/dolly-vn/ViZipvoice) và cache bằng `huggingface_hub`.
+Mặc định lệnh trên sẽ tải model từ [contextboxai/ViZipvoice](https://huggingface.co/contextboxai/ViZipvoice) và cache bằng `huggingface_hub`.
 Nếu trên Hugging Face có nhiều file `checkpoint-<step>.pt`, CLI sẽ tự load file có step lớn nhất.
 
 ## Ref audio trên Hugging Face
@@ -87,28 +87,28 @@ Các file demo được sinh bằng `checkpoint-700000.pt` với text dài trong
 
 **Đinh-Quyết**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav"></audio>
 
-[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
+[Nghe trực tiếp](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_01_%C4%90inh-Quy%E1%BA%BFt.wav)
 
 **Nhã-Uyên**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav"></audio>
 
-[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
+[Nghe trực tiếp](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_02_Nh%C3%A3-Uy%C3%AAn.wav)
 
 **MC**
 
-<audio controls src="https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
+<audio controls src="https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_03_MC.wav"></audio>
 
-[Nghe trực tiếp](https://huggingface.co/dolly-vn/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
+[Nghe trực tiếp](https://huggingface.co/contextboxai/ViZipvoice/resolve/main/demo/demo_03_MC.wav)
 
 ## Chạy Gradio với ref audio trên Hugging Face
 
 Tải model kèm checkpoint, config, tokenizer, `audio/` và `demo/` về local:
 
 ```bash
-huggingface-cli download dolly-vn/ViZipvoice \
+huggingface-cli download contextboxai/ViZipvoice \
   --local-dir models/ViZipvoice \
   --local-dir-use-symlinks False
 ```
@@ -187,7 +187,7 @@ print(metrics)
 
 Wrapper mặc định:
 
-- tải model từ `dolly-vn/ViZipvoice`;
+- tải model từ `contextboxai/ViZipvoice`;
 - chọn checkpoint `checkpoint-<step>.pt` mới nhất theo step;
 - dùng `SimpleTokenizer` đúng với `tokens.txt` tiếng Việt;
 - normalize `prompt_text` và `text` bằng `soe-vinorm`, rồi sửa khoảng trắng quanh dấu câu;
@@ -201,7 +201,7 @@ Wrapper mặc định:
 Nếu đã tải model từ Hugging Face về thư mục riêng:
 
 ```bash
-huggingface-cli download dolly-vn/ViZipvoice \
+huggingface-cli download contextboxai/ViZipvoice \
   --local-dir models/ViZipvoice \
   --local-dir-use-symlinks False
 
