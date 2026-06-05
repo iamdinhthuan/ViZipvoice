@@ -178,7 +178,7 @@ def preview_normalized_text(prompt_text: str, target_text: str) -> str:
     )
 
 
-@spaces.GPU(duration=120)
+@spaces.GPU(duration=60)
 def generate(
     ref_label: str,
     prompt_audio: Optional[str],
