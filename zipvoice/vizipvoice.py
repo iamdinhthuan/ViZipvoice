@@ -318,8 +318,14 @@ def postprocess_audio_segments(
 
 
 def wav_seconds(path: Union[str, Path]) -> float:
-    info = torchaudio.info(str(path))
-    return float(info.num_frames) / float(info.sample_rate)
+    try:
+        import soundfile as sf
+
+        info = sf.info(str(path))
+        return float(info.frames) / float(info.samplerate)
+    except Exception:
+        audio, sr = torchaudio.load(str(path))
+        return float(audio.shape[-1]) / float(sr)
 
 
 class ViZipVoiceTTS:

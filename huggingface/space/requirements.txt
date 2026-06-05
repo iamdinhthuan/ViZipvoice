@@ -3,6 +3,7 @@
 gradio
 torch
 torchaudio
+torchcodec
 numpy
 lhotse
 huggingface_hub
@@ -10,6 +11,8 @@ safetensors
 vocos
 pydub
 soundfile
+tensorboard
+spaces
 cn2an
 inflect
 soe-vinorm>=0.3.2

@@ -15,6 +15,22 @@ import gradio as gr
 import torch
 from huggingface_hub import hf_hub_download, list_repo_files
 
+try:
+    import spaces
+except ImportError:
+    class _SpacesFallback:
+        @staticmethod
+        def GPU(*decorator_args, **decorator_kwargs):
+            if decorator_args and callable(decorator_args[0]) and not decorator_kwargs:
+                return decorator_args[0]
+
+            def decorator(fn):
+                return fn
+
+            return decorator
+
+    spaces = _SpacesFallback()
+
 
 MODEL_REPO_ID = os.getenv("VIZIPVOICE_MODEL_REPO", "dolly-vn/ViZipvoice")
 GITHUB_REPO_URL = os.getenv(
@@ -47,7 +63,8 @@ class RefPrompt:
 
 
 def ensure_code_repo() -> None:
-    if (CODE_DIR / "zipvoice" / "vizipvoice.py").is_file():
+    refresh_code = os.getenv("VIZIPVOICE_REFRESH_CODE", "1") != "0"
+    if (CODE_DIR / "zipvoice" / "vizipvoice.py").is_file() and not refresh_code:
         return
 
     if CODE_DIR.exists():
@@ -157,6 +174,7 @@ def preview_normalized_text(prompt_text: str, target_text: str) -> str:
     )
 
 
+@spaces.GPU(duration=120)
 def generate(
     ref_label: str,
     prompt_audio: Optional[str],

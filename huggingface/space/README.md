@@ -5,6 +5,7 @@ colorFrom: blue
 colorTo: gray
 sdk: gradio
 app_file: app.py
+python_version: "3.10"
 pinned: false
 license: apache-2.0
 models:
