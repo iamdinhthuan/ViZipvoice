@@ -140,6 +140,10 @@ def get_tts() -> ViZipVoiceTTS:
     return ViZipVoiceTTS(repo_id=MODEL_REPO_ID, checkpoint_name="latest", num_threads=1)
 
 
+if os.getenv("VIZIPVOICE_PRELOAD_MODEL", "1") != "0":
+    get_tts()
+
+
 def refs_by_label() -> dict[str, RefPrompt]:
     return {item.label: item for item in load_ref_prompts()}
 
