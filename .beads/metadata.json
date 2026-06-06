@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "ViZipvoice",
+  "project_id": "f666c853-8d3f-4c62-828a-6e05b22c95c4"
+}
