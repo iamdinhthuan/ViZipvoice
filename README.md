@@ -197,6 +197,75 @@ Wrapper mặc định:
 - tự chọn `cuda`, `mps` hoặc `cpu`;
 - bật autocast FP16 khi chạy trên CUDA.
 
+## Chạy TTS service async
+
+Service API chỉ làm TTS, không quản lý preset voice. Mỗi job upload một audio clone kèm transcript của audio đó.
+
+Chạy local bằng Docker:
+
+```bash
+docker build -t vizipvoice-tts .
+docker run --rm -p 8000:8000 \
+  -e VIZIPVOICE_MODEL_DIR=/models/ViZipvoice \
+  -v "$PWD/models/ViZipvoice:/models/ViZipvoice:ro" \
+  vizipvoice-tts
+```
+
+Tạo job:
+
+```bash
+curl -X POST http://localhost:8000/v1/tts/jobs \
+  -F 'reference_audio=@prompt.wav' \
+  -F 'request={"text":"Nội dung cần đọc.","reference_text":"Transcript đúng của prompt.wav."}'
+```
+
+Poll status:
+
+```bash
+curl http://localhost:8000/v1/tts/jobs/<job_id>
+```
+
+Download audio:
+
+```bash
+curl -L http://localhost:8000/v1/tts/jobs/<job_id>/audio -o output.wav
+```
+
+## Deploy Modal
+
+Modal deploy dùng worker GPU NVIDIA L4, cold start mặc định để tránh giữ GPU idle:
+
+- `gpu="L4"`
+- `min_containers=0`
+- `buffer_containers=0`
+- `max_containers=1`
+- `scaledown_window=5`
+
+Nếu model đã nằm trong Modal Volume:
+
+```bash
+export VIZIPVOICE_MODAL_VOLUME=vizipvoice-models
+export VIZIPVOICE_MODAL_VOLUME_MOUNT=/models
+export VIZIPVOICE_MODEL_DIR=/models/ViZipvoice
+modal deploy modal_app.py
+```
+
+Nếu muốn dùng Hugging Face cache/download thay vì volume, bỏ `VIZIPVOICE_MODEL_DIR` và set secret nếu cần token:
+
+```bash
+export VIZIPVOICE_MODAL_SECRET=vizipvoice-secrets
+modal deploy modal_app.py
+```
+
+Các biến deploy hay dùng:
+
+```bash
+export VIZIPVOICE_MODAL_GPU=L4
+export VIZIPVOICE_MODAL_MAX_CONTAINERS=1
+export VIZIPVOICE_MODAL_SCALEDOWN_WINDOW=5
+export VIZIPVOICE_MODAL_WORKER_TIMEOUT=900
+```
+
 ## Chạy với model local
 
 Nếu đã tải model từ Hugging Face về thư mục riêng:

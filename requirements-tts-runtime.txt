@@ -1,0 +1,25 @@
+--find-links https://k2-fsa.github.io/icefall/piper_phonemize.html
+
+torch
+torchaudio
+torchcodec>=0.12
+tensorboard
+numpy
+lhotse
+huggingface_hub
+safetensors
+vocos
+pydub
+soundfile
+
+# Vietnamese normalization
+cn2an
+inflect
+soe-vinorm>=0.3.2
+
+# Tokenization modules imported by zipvoice.tokenizer.tokenizer
+jieba
+piper_phonemize
+pypinyin
+setuptools<81
+typing_extensions>=4.15.0
