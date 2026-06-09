@@ -99,11 +99,11 @@ def get_modal_synthesizer():
     buffer_containers=0,
     max_containers=WORKER_MAX_CONTAINERS,
     scaledown_window=WORKER_SCALEDOWN_WINDOW_SECONDS,
-    allow_concurrent_inputs=WORKER_MAX_CONTAINERS,
     env=modal_worker_env(),
     volumes=modal_worker_volumes(),
     secrets=modal_worker_secrets(),
 )
+@modal.concurrent(max_inputs=WORKER_MAX_CONTAINERS)
 def synthesize_tts_job(
     *,
     reference_audio: bytes,
