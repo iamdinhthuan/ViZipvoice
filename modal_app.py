@@ -17,9 +17,10 @@ WORKER_STARTUP_TIMEOUT_SECONDS = int(
     os.getenv("VIZIPVOICE_MODAL_STARTUP_TIMEOUT", "900")
 )
 WORKER_SCALEDOWN_WINDOW_SECONDS = int(
-    os.getenv("VIZIPVOICE_MODAL_SCALEDOWN_WINDOW", "5")
+    os.getenv("VIZIPVOICE_MODAL_SCALEDOWN_WINDOW", "300")
 )
-WORKER_MAX_CONTAINERS = int(os.getenv("VIZIPVOICE_MODAL_MAX_CONTAINERS", "1"))
+WORKER_MIN_CONTAINERS = int(os.getenv("VIZIPVOICE_MODAL_MIN_CONTAINERS", "1"))
+WORKER_MAX_CONTAINERS = int(os.getenv("VIZIPVOICE_MODAL_MAX_CONTAINERS", "3"))
 WEB_SCALEDOWN_WINDOW_SECONDS = int(os.getenv("VIZIPVOICE_MODAL_WEB_SCALEDOWN_WINDOW", "10"))
 
 
@@ -94,10 +95,11 @@ def get_modal_synthesizer():
     gpu=MODAL_GPU,
     timeout=WORKER_TIMEOUT_SECONDS,
     startup_timeout=WORKER_STARTUP_TIMEOUT_SECONDS,
-    min_containers=0,
+    min_containers=WORKER_MIN_CONTAINERS,
     buffer_containers=0,
     max_containers=WORKER_MAX_CONTAINERS,
     scaledown_window=WORKER_SCALEDOWN_WINDOW_SECONDS,
+    allow_concurrent_inputs=WORKER_MAX_CONTAINERS,
     env=modal_worker_env(),
     volumes=modal_worker_volumes(),
     secrets=modal_worker_secrets(),

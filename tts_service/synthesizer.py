@@ -55,7 +55,7 @@ class ViZipVoiceSynthesizer:
             vocoder_path=os.getenv("VIZIPVOICE_VOCODER_PATH") or None,
             device=os.getenv("VIZIPVOICE_DEVICE") or None,
             use_fp16=os.getenv("VIZIPVOICE_FP16", "1") != "0",
-            num_threads=int(os.getenv("VIZIPVOICE_NUM_THREADS", "1")),
+            num_threads=int(os.getenv("VIZIPVOICE_NUM_THREADS", "4")),
         )
 
     @property

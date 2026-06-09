@@ -14,7 +14,9 @@ class TTSJobStatus(str, Enum):
 
 
 class TTSGenerationOptions(BaseModel):
-    num_steps: int = Field(default=16, ge=4, le=64)
+    model_config = {"populate_by_name": True}
+
+    num_steps: int = Field(default=16, ge=1, le=64, alias="step", alias_priority=1)
     guidance_scale: float = Field(default=1.0, ge=0.0, le=5.0)
     speed: float = Field(default=1.0, ge=0.5, le=1.5)
     t_shift: float = Field(default=0.5, ge=0.1, le=1.0)
