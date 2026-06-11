@@ -51,6 +51,11 @@ DEMO_TEXT = (
 )
 PREFERRED_REFS = ["Đinh-Quyết", "Nhã-Uyên", "MC"]
 AUDIO_EXTENSIONS = {".wav", ".mp3", ".flac", ".m4a", ".ogg"}
+DEMO_AUDIO_FILES = [
+    "demo/demo_01_Đinh-Quyết.wav",
+    "demo/demo_02_Nhã-Uyên.wav",
+    "demo/demo_03_MC.wav",
+]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -132,6 +137,25 @@ def load_ref_prompts() -> tuple[RefPrompt, ...]:
     if not prompts:
         raise RuntimeError(f"No reference audio found in {MODEL_REPO_ID}/audio")
     return tuple(prompts)
+
+
+@lru_cache(maxsize=1)
+def load_demo_audio_paths() -> tuple[tuple[str, str], ...]:
+    demo_paths = []
+    for filename in DEMO_AUDIO_FILES:
+        try:
+            path = Path(
+                hf_hub_download(
+                    repo_id=MODEL_REPO_ID,
+                    repo_type="model",
+                    filename=filename,
+                )
+            )
+        except Exception:
+            logging.exception("Failed to load demo audio %s", filename)
+            continue
+        demo_paths.append((path.stem.replace("demo_", "", 1), str(path)))
+    return tuple(demo_paths)
 
 
 @lru_cache(maxsize=1)
@@ -232,6 +256,7 @@ def generate(
 def build_app() -> gr.Blocks:
     ref = default_ref()
     choices = [item.label for item in load_ref_prompts()]
+    demo_audio_paths = load_demo_audio_paths()
 
     with gr.Blocks(title="ViZipVoice") as demo:
         gr.Markdown(
@@ -239,6 +264,16 @@ def build_app() -> gr.Blocks:
             "[Model](https://huggingface.co/contextboxai/ViZipvoice) · "
             "[GitHub](https://github.com/iamdinhthuan/ViZipvoice)"
         )
+
+        if demo_audio_paths:
+            with gr.Row():
+                for label, audio_path in demo_audio_paths:
+                    gr.Audio(
+                        value=audio_path,
+                        type="filepath",
+                        label=label,
+                        interactive=False,
+                    )
 
         with gr.Row():
             with gr.Column(scale=1):
