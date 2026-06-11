@@ -180,9 +180,9 @@ def default_ref() -> RefPrompt:
     return prompts[0]
 
 
-def select_ref(label: str) -> tuple[str, str]:
+def select_ref(label: str):
     item = refs_by_label()[label]
-    return item.audio_path, item.text
+    return gr.update(value=item.audio_path), item.text
 
 
 @spaces.GPU(duration=60)
@@ -399,4 +399,7 @@ def build_app() -> gr.Blocks:
 demo = build_app()
 
 if __name__ == "__main__":
-    demo.queue(max_size=8).launch()
+    demo.queue(max_size=8).launch(
+        show_error=True,
+        allowed_paths=[str(Path.home() / ".cache" / "huggingface" / "hub")],
+    )
