@@ -20,7 +20,7 @@ Vietnamese zero-shot TTS / voice cloning fine-tuned from [ZipVoice](https://gith
 - GitHub: https://github.com/iamdinhthuan/ViZipvoice
 - Model repo: https://huggingface.co/contextboxai/ViZipvoice
 - Space: https://huggingface.co/spaces/dinhthuan/ViZipvoice
-- Latest checkpoint: `checkpoint-1300000.pt`, FP16 inference state dict
+- Latest checkpoint: `checkpoint-1860000.pt`, FP16 inference state dict
 - Training data: about `7000` total hours, including roughly `6500` hours of Vietnamese and `500` hours of English
 - Tokenizer: `SimpleTokenizer`, character-level, `244` tokens
 - Sample rate: `24 kHz`
@@ -30,7 +30,7 @@ The wrapper loads the largest `checkpoint-<step>.pt` automatically and uses `soe
 
 ## Audio Demo
 
-Generated with `checkpoint-700000.pt`, the current wrapper flow, and the demo text in `demo/demo_text.txt`.
+Generated with `checkpoint-1860000.pt`, the current wrapper flow, and the demo text in `demo/demo_text.txt`.
 
 **Đinh-Quyết**
 
@@ -129,8 +129,7 @@ Useful knobs:
 
 ## Files
 
-- `checkpoint-1300000.pt`: latest FP16 checkpoint
-- Earlier FP16 checkpoints such as `checkpoint-700000.pt` and `checkpoint-920000.pt` may be kept for comparison; the current demo audios were generated from 700k.
+- `checkpoint-1860000.pt`: latest FP16 checkpoint
 - `config.json`, `model.json`: model config
 - `tokens.txt`: Vietnamese character tokenizer
 - `audio/`: 30 reference audios plus `.txt` transcripts

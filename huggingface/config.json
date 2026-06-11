@@ -5,7 +5,7 @@
   "model_type": "zipvoice",
   "library_name": "pytorch",
   "pipeline_tag": "text-to-speech",
-  "checkpoint": "checkpoint-1300000.pt",
+  "checkpoint": "checkpoint-1860000.pt",
   "dataset_hours": 7000,
   "tokenizer": {
     "type": "SimpleTokenizer",

@@ -12,8 +12,7 @@ ViZipVoice là bản fine-tune tiếng Việt của [ZipVoice](https://github.co
 
 Model đã được upload tại [contextboxai/ViZipvoice](https://huggingface.co/contextboxai/ViZipvoice). Repo Hugging Face chứa:
 
-- `checkpoint-1300000.pt`: checkpoint mới nhất theo training step, đã tách phần inference và lưu FP16.
-- Các checkpoint FP16 trước đó, ví dụ `checkpoint-700000.pt` và `checkpoint-920000.pt`, có thể được giữ để đối chiếu. Bộ audio demo hiện tại được sinh từ checkpoint 700k.
+- `checkpoint-1860000.pt`: checkpoint mới nhất theo training step, đã tách phần inference và lưu FP16.
 - `config.json`: cấu hình model kiêm query file để Hugging Face track download stats.
 - `model.json`: cấu hình ZipVoice dùng để dựng model.
 - `tokens.txt`: tokenizer ký tự tiếng Việt, `244` token.
@@ -23,7 +22,7 @@ Model đã được upload tại [contextboxai/ViZipvoice](https://huggingface.c
 - `vizipvoice.py`: wrapper mẫu cho người muốn tải file từ Hugging Face.
 
 Model sử dụng sample rate `24 kHz` và vocoder mặc định `charactr/vocos-mel-24khz`.
-Wrapper mặc định sẽ tự tìm các file `checkpoint-<step>.pt` và load checkpoint có step lớn nhất. Hiện tại checkpoint mới nhất là `checkpoint-1300000.pt`.
+Wrapper mặc định sẽ tự tìm các file `checkpoint-<step>.pt` và load checkpoint có step lớn nhất. Hiện tại checkpoint mới nhất là `checkpoint-1860000.pt`.
 
 ## Training data & tokenizer
 
@@ -84,7 +83,7 @@ Tên file đã được làm sạch, chỉ giữ tên audio/người nói và kh
 
 ## Audio demo
 
-Các file demo được sinh bằng `checkpoint-700000.pt` với text dài trong thư mục `demo/` trên Hugging Face. Nếu trình Markdown không render audio player, bấm link nghe trực tiếp bên dưới.
+Các file demo được sinh bằng `checkpoint-1860000.pt` với text dài trong thư mục `demo/` trên Hugging Face. Nếu trình Markdown không render audio player, bấm link nghe trực tiếp bên dưới.
 
 **Đinh-Quyết**
 
